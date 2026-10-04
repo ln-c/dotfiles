@@ -1,0 +1,13 @@
+[mgr]
+ratio = [ 0, 5, 5 ]
+sort_by = "natural"
+sort_dir_first = true
+linemode = "size"
+show_hidden = true 
+[preview]
+tab_size = 4
+max_width = 1000
+max_height = 1000
+cache_dir = ""
+image_filter = "triangle"
+image_quality = 75

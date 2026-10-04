@@ -1,0 +1,9 @@
+font=GohuFont uni14 Nerd Font 11
+background-color={background}FF
+text-color={foreground}FF
+border-color={color4}FF
+border-size=2
+border-radius=8
+default-timeout=5000
+ignore-timeout=1
+
