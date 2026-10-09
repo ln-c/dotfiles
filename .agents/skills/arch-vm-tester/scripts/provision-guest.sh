@@ -8,14 +8,17 @@ echo "Provisioning Arch VM for Hyprland testing..."
 sudo pacman-key --init
 sudo pacman-key --populate archlinux
 sudo pacman -Sy --noconfirm archlinux-keyring
-sudo pacman -Syu --noconfirm
+# (Omit full system upgrade for speed, we just need packages)
 
 # Install base tools and hyprland requirements
 sudo pacman -S --noconfirm \
     hyprland waybar foot fuzzel \
-    git rsync python python-pywal \
+    git rsync python python-pip \
     starship yazi ttf-nerd-fonts-symbols \
-    mesa lib32-mesa vulkan-virtio
+    mesa vulkan-virtio fastfetch wl-clipboard ffmpeg mpv
+
+# Install pywal via pip in the VM (since paru isn't configured in the VM)
+sudo pip install --break-system-packages pywal
 
 # Setup 9p mount for dotfiles
 mkdir -p ~/git/dotfiles
