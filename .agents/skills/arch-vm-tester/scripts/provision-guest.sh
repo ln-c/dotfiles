@@ -18,7 +18,6 @@ sudo pacman -S --noconfirm \
     mesa vulkan-virtio fastfetch wl-clipboard ffmpeg mpv imagemagick mako libnotify
 
 # Install pywal via pip in the VM (since paru isn't configured in the VM)
-sudo pip install --break-system-packages pywal
 
 # Setup 9p mount for dotfiles
 mkdir -p ~/git/dotfiles
