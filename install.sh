@@ -4,7 +4,6 @@ set -e
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "Installing required dependencies..."
-# Use paru to install packages including AUR packages like python-pywal
 if command -v paru &> /dev/null; then
     paru -S --needed --noconfirm \
         hyprland waybar foot fuzzel \
@@ -25,28 +24,28 @@ echo "Creating necessary directories..."
 mkdir -p ~/.config
 mkdir -p ~/.local/bin
 
-echo "Deploying configurations..."
+echo "Deploying configurations via hard copy..."
 for item in "$DOTFILES_DIR/.config"/*; do
     basename=$(basename "$item")
-    echo "Symlinking ~/.config/$basename"
+    echo "Copying ~/.config/$basename"
     
-    if [ -e "$HOME/.config/$basename" ] && [ ! -L "$HOME/.config/$basename" ]; then
-        mv "$HOME/.config/$basename" "$HOME/.config/$basename.bak"
+    if [ -e "$HOME/.config/$basename" ]; then
+        rm -rf "$HOME/.config/$basename"
     fi
     
-    ln -sfn "$item" "$HOME/.config/$basename"
+    cp -r "$item" "$HOME/.config/$basename"
 done
 
-echo "Deploying local scripts..."
+echo "Deploying local scripts via hard copy..."
 for script in "$DOTFILES_DIR/.local/bin"/*; do
     basename=$(basename "$script")
-    echo "Symlinking ~/.local/bin/$basename"
+    echo "Copying ~/.local/bin/$basename"
     
-    if [ -e "$HOME/.local/bin/$basename" ] && [ ! -L "$HOME/.local/bin/$basename" ]; then
-        mv "$HOME/.local/bin/$basename" "$HOME/.local/bin/$basename.bak"
+    if [ -e "$HOME/.local/bin/$basename" ]; then
+        rm -rf "$HOME/.local/bin/$basename"
     fi
     
-    ln -sfn "$script" "$HOME/.local/bin/$basename"
+    cp -r "$script" "$HOME/.local/bin/$basename"
     chmod +x "$HOME/.local/bin/$basename"
 done
 
