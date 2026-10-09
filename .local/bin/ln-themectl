@@ -58,6 +58,7 @@ envsubst "$ALLOWED_VARS" < ~/.config/hypr/hyprlock.conf.template > ~/.config/hyp
 
 # Apply wallpaper with Pywal
 WALL_TRACKER="$HOME/.cache/current_wallpaper"
+mkdir -p "$(dirname "$WALL_TRACKER")"
 
 if [[ -n "$NEW_WALL" ]]; then
     NEW_WALL=$(realpath "$NEW_WALL")
