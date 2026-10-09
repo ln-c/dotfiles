@@ -1,0 +1,9 @@
+.config/foot/foot.ini
+.config/fuzzel/fuzzel.ini
+.config/waybar/style.css
+.config/hypr/hyprlock.conf
+.config/com.limusic.desktop/.window-state.json
+
+# Agent files
+AGENTS.md
+.gemini/

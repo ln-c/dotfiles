@@ -1,4 +1,4 @@
-font=GohuFont uni14 Nerd Font 11
+font=$FONT_NAME $FONT_SIZE
 background-color={background}FF
 text-color={foreground}FF
 border-color={color4}FF

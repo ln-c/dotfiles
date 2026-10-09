@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+# Default values
+NEW_WALL=""
+NEW_FONT=""
+NEW_SIZE=""
+
+print_help() {
+    echo "Usage: ln-themectl [OPTIONS]"
+    echo "Options:"
+    echo "  -w, --wallpaper <path>    Set new wallpaper"
+    echo "  -f, --font <font_name>    Set new font name"
+    echo "  -s, --size <font_size>    Set new font size"
+    echo "  -h, --help                Show this help message"
+    echo ""
+    echo "If no arguments are provided, it just re-applies the current theme."
+}
+
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -w|--wallpaper) NEW_WALL="$2"; shift 2 ;;
+        -f|--font) NEW_FONT="$2"; shift 2 ;;
+        -s|--size) NEW_SIZE="$2"; shift 2 ;;
+        -h|--help) print_help; exit 0 ;;
+        *) echo "Unknown parameter passed: $1"; print_help; exit 1 ;;
+    esac
+done
+
+# Initialize notification message parts
+NOTIFY_MSG="Theme updated successfully."
+NOTIFY_DETAILS=""
+
+# Update env.lua if fonts changed
+ENV_FILE=~/.config/hypr/env.lua
+if [[ -n "$NEW_FONT" ]]; then
+    sed -i "s/hl.env(\"FONT_NAME\", \".*\")/hl.env(\"FONT_NAME\", \"$NEW_FONT\")/" "$ENV_FILE"
+    NOTIFY_DETAILS+="Font: $NEW_FONT\n"
+fi
+
+if [[ -n "$NEW_SIZE" ]]; then
+    sed -i "s/hl.env(\"FONT_SIZE\", \".*\")/hl.env(\"FONT_SIZE\", \"$NEW_SIZE\")/" "$ENV_FILE"
+    NOTIFY_DETAILS+="Size: $NEW_SIZE\n"
+fi
+
+# Load current variables from env.lua for templating
+export FONT_NAME=$(grep -oP '(?<=hl.env\("FONT_NAME", ")[^"]*' "$ENV_FILE" 2>/dev/null || echo "Terminess Nerd Font Propo")
+export FONT_SIZE=$(grep -oP '(?<=hl.env\("FONT_SIZE", ")[^"]*' "$ENV_FILE" 2>/dev/null || echo "16")
+
+export HYPRLOCK_FONT_SIZE=$(( (FONT_SIZE * 5) / 2 ))
+export WAYBAR_FONT_SIZE=$(( FONT_SIZE + 5 ))
+export ALLOWED_VARS='$FONT_NAME $FONT_SIZE $HYPRLOCK_FONT_SIZE $WAYBAR_FONT_SIZE'
+
+envsubst "$ALLOWED_VARS" < ~/.config/foot/foot.ini.template > ~/.config/foot/foot.ini
+envsubst "$ALLOWED_VARS" < ~/.config/fuzzel/fuzzel.ini.template > ~/.config/fuzzel/fuzzel.ini
+envsubst "$ALLOWED_VARS" < ~/.config/waybar/style.css.template > ~/.config/waybar/style.css
+envsubst "$ALLOWED_VARS" < ~/.config/hypr/hyprlock.conf.template > ~/.config/hypr/hyprlock.conf
+
+# Apply wallpaper with Pywal
+WALL_TRACKER="$HOME/.cache/current_wallpaper"
+
+if [[ -n "$NEW_WALL" ]]; then
+    NEW_WALL=$(realpath "$NEW_WALL")
+    echo "$NEW_WALL" > "$WALL_TRACKER"
+    
+    # If the wallpaper is a video, generate a thumbnail and run wal on it
+    if [[ "${NEW_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
+        THUMB="${NEW_WALL%.*}.jpg"
+        if [[ ! -f "$THUMB" ]]; then
+            ffmpeg -y -i "$NEW_WALL" -vf "thumbnail" -frames:v 1 "$THUMB" > /dev/null 2>&1
+        fi
+        wal -i "$THUMB" -n
+    else
+        wal -i "$NEW_WALL"
+    fi
+    NOTIFY_DETAILS+="Wallpaper: $(basename "$NEW_WALL")\n"
+else
+    wal -R
+fi
+
+
+
+# Apply Mako template
+envsubst "$ALLOWED_VARS" < ~/.cache/wal/mako-config > /tmp/mako-config && mv /tmp/mako-config ~/.cache/wal/mako-config
+
+# Restart Daemons
+killall -q waybar
+killall -q hyprpaper
+killall -q mpvpaper
+
+sleep 0.5
+
+hyprctl eval 'hl.exec_cmd("waybar")' > /dev/null 2>&1
+
+CURRENT_WALL=$(cat "$WALL_TRACKER" 2>/dev/null)
+if [[ -n "$CURRENT_WALL" && "${CURRENT_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
+    hyprctl eval "hl.exec_cmd(\"mpvpaper -vs -o 'loop no-audio' '*' '$CURRENT_WALL'\")" > /dev/null 2>&1
+else
+    hyprctl eval 'hl.exec_cmd("hyprpaper")' > /dev/null 2>&1
+fi
+
+makoctl reload || true
+
+# Send notification
+if [[ -n "$NOTIFY_DETAILS" ]]; then
+    notify-send "Theme Manager" "$NOTIFY_MSG\n\n$NOTIFY_DETAILS" -i preferences-desktop-theme
+else
+    notify-send "Theme Manager" "$NOTIFY_MSG" -i preferences-desktop-theme
+fi

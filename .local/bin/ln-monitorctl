@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Check if a monitor name was provided
+if [ -z "$1" ]; then
+    echo "Usage: ln-monitorctl <monitor_name> [on|off]"
+    echo ""
+    echo "Available monitors:"
+    # List all monitors
+    hyprctl monitors all | awk '/^Monitor/ {print $2}'
+    exit 1
+fi
+
+# If the "ini" is provided, means disable eDP-1 (laptop monitor)
+COUNT=$(hyprctl monitors all | grep -c "^Monitor")
+if [[ "$1" == "ini" && COUNT > 1 ]]; then
+    hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })'
+    exit 1
+fi
+
+# Check whether valid monitor is provided
+MONITORS=$(hyprctl monitors all | awk '/^Monitor/ {print $2}')
+for monitor in $MONITORS; do
+    if [[ "$1" == "$monitor" ]]; then
+        MONITOR="$1"
+    else
+	echo "Error: Invalid monitor ID"
+	echo "Try ln-monitorctl without argument to see the list of monitor IDs"
+	exit 1
+    fi
+done
+
+# Default to 'off' if the second argument isn't provided
+ACTION="${2:-off}"
+
+if [[ "$ACTION" == "off" ]]; then
+    #echo "Turning off backlight for $MONITOR..."
+    #hyprctl eval 'hl.dispatch(hl.dsp.dpms({ action = "disable", monitor = "'"$MONITOR"'" }))'
+    echo "Disabling $MONITOR"
+    hyprctl eval 'hl.monitor({ output = "'$MONITOR'", disabled = true })'
+
+elif [[ "$ACTION" == "on" ]]; then
+    #echo "Turning on backlight for $MONITOR..."
+    #hyprctl eval 'hl.dispatch(hl.dsp.dpms({ action = "enable", monitor = "'"$MONITOR"'" }))'
+    echo "Enabling $MONITOR"
+    hyprctl eval 'hl.monitor({ output = "'$MONITOR'", disabled = false })'
+else
+    echo "Error: Action must be 'on' or 'off'."
+    exit 1
+fi

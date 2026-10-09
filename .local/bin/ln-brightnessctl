@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Check action for brightnessctl command
+ACTION="$1"
+
+# Default action is help, if no action provided
+if [ -n "$ACTION" ]; then
+    brightnessctl $*    
+else
+    brightnessctl --help
+fi
+
+# Wait a fraction of a second to update the metadata
+sleep 0.1
+
+# Fetch the new info
+BRIGHTNESS=$(brightnessctl i)
+
+# Send the notification
+# The 'string:x-canonical-private-synchronous' flag replaces the old popup instead of stacking them
+if [ -n "$BRIGHTNESS" ]; then
+    notify-send -h string:x-canonical-private-synchronous:media "$BRIGHTNESS"
+fi

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Execute the playerctl command (next, previous, play-pause)
+playerctl "$1"
+
+# Wait a fraction of a second for Limusic to update its metadata
+sleep 0.1
+
+# Fetch the new track info
+TITLE=$(playerctl metadata title)
+ARTIST=$(playerctl metadata artist)
+
+# Send the notification
+# The 'string:x-canonical-private-synchronous' flag replaces the old popup instead of stacking them
+if [ -n "$TITLE" ]; then
+    notify-send -h string:x-canonical-private-synchronous:media "Now Playing" "<b>$TITLE</b>\n$ARTIST"
+fi

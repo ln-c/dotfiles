@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Check action for wpctl command (help, set-volume, set-mute)
+ACTION="$1"
+
+# Default action is help, if no action provided
+if [ -n "$ACTION" ]; then
+    wpctl $*    
+else
+    wpctl help
+fi
+
+# Wait a fraction of a second to update the metadata
+sleep 0.1
+
+# Fetch the new info
+VOLUME=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+
+# Send the notification
+# The 'string:x-canonical-private-synchronous' flag replaces the old popup instead of stacking them
+if [ -n "$VOLUME" ]; then
+    notify-send -h string:x-canonical-private-synchronous:media "$VOLUME"
+fi

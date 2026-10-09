@@ -1,5 +1,6 @@
 -- ~/.config/hypr/hyprland.lua
 
+require("env")
 require("monitors")
 require("misc")
 require("autostart")

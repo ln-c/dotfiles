@@ -1,5 +1,8 @@
 source = ~/.cache/wal/colors-hyprland
 
+$font = ${FONT_NAME}
+$font_size = ${HYPRLOCK_FONT_SIZE}
+
 # Horizontal display (PIN entry)
 background {
     monitor = eDP-1
@@ -21,7 +24,7 @@ input-field {
     check_color = $backgroundCol $backgroundCol
     fail_color = $backgroundCol $backgroundCol
     font_color = $color9
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_family = $font
     fade_on_empty = false
     shadow_color = rgba(0,0,0,0.5)
     shadow_passes = 2
@@ -39,8 +42,8 @@ label {
     monitor = eDP-1
     text = <i>Hello</i> <b>ln</b>
     color = $color5
-    font_size = 40
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_size = $font_size
+    font_family = $font
     shadow_passes = 0
     shadow_size = 4
     position = 0, 100
@@ -69,7 +72,7 @@ input-field {
     check_color = $backgroundCol $backgroundCol
     fail_color = $backgroundCol $backgroundCol
     font_color = $color9
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_family = $font
     fade_on_empty = false
     shadow_color = rgba(0,0,0,0.5)
     shadow_passes = 2
@@ -87,8 +90,8 @@ label {
     monitor = DP-1
     text = <i>Hello</i> <b>ln</b>
     color = $color5
-    font_size = 40
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_size = $font_size
+    font_family = $font
     shadow_passes = 0
     shadow_size = 4
     position = 0, 50
@@ -109,7 +112,7 @@ label {
     text = cmd[update:1000] date +"<b>%I</b>:<b>%M</b>"
     color = $color9
     font_size = 120
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_family = $font
     shadow_passes = 0
     shadow_size = 5
     position = 0, 200
@@ -121,8 +124,8 @@ label {
     monitor = 
     text = cmd[update:1000] date +"<b>%A, %B %d, %Y</b>"
     color = $color4
-    font_size = 40
-    font_family = GohuFont uni14 Nerd Font Propo
+    font_size = $font_size
+    font_family = $font
     shadow_passes = 0
     shadow_size = 4
     position = 0, 350

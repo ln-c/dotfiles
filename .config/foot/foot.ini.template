@@ -1,5 +1,5 @@
 [main]
-font=GohuFont uni14 Nerd Font:size=11
+font=${FONT_NAME}:size=${FONT_SIZE}
 pad=14x14
 dpi-aware=no
 selection-target=primary
