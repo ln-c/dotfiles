@@ -8,3 +8,5 @@
 AGENTS.md
 .gemini/
 .agents/skills/arch-vm-tester/vm_data/
+.agents/
+.agents/
