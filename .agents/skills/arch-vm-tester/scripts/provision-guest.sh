@@ -23,7 +23,7 @@ sudo pip install --break-system-packages pywal
 # Setup 9p mount for dotfiles
 mkdir -p ~/git/dotfiles
 sudo mount -t 9p -o trans=virtio,version=9p2000.L host_dotfiles ~/git/dotfiles
-echo "host_dotfiles /home/ln/git/dotfiles 9p trans=virtio,version=9p2000.L,rw 0 0" | sudo tee -a /etc/fstab
+echo "host_dotfiles /home/ln/git/dotfiles 9p trans=virtio,version=9p2000.L,_netdev,rw 0 0" | sudo tee -a /etc/fstab
 
 # Copy scripts and configs
 echo "Applying dotfiles from host..."
