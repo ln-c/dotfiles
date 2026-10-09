@@ -10,14 +10,14 @@ if command -v paru &> /dev/null; then
         hyprland waybar foot fuzzel \
         git rsync python python-pywal \
         starship yazi ttf-nerd-fonts-symbols \
-        fastfetch wl-clipboard ffmpeg mpv
+        fastfetch wl-clipboard ffmpeg mpv imagemagick mako libnotify
 else
     echo "paru not found. Installing standard packages with pacman..."
     sudo pacman -S --needed --noconfirm \
         hyprland waybar foot fuzzel \
         git rsync python \
         starship yazi ttf-nerd-fonts-symbols \
-        fastfetch wl-clipboard ffmpeg mpv
+        fastfetch wl-clipboard ffmpeg mpv imagemagick mako libnotify
     echo "Please install python-pywal manually from the AUR."
 fi
 

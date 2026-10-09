@@ -15,7 +15,7 @@ sudo pacman -S --noconfirm \
     hyprland waybar foot fuzzel \
     git rsync python python-pip \
     starship yazi ttf-nerd-fonts-symbols \
-    mesa vulkan-virtio fastfetch wl-clipboard ffmpeg mpv
+    mesa vulkan-virtio fastfetch wl-clipboard ffmpeg mpv imagemagick mako libnotify
 
 # Install pywal via pip in the VM (since paru isn't configured in the VM)
 sudo pip install --break-system-packages pywal
