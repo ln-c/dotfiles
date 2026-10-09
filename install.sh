@@ -129,6 +129,12 @@ if [ -d "$DOTFILES_DIR/.local/bin" ]; then
 fi
 
 # 6. Post-install
+# 5.5. Deploy root-level dotfiles
+log_step "Deploying root-level dotfiles..."
+if [ -f "$DOTFILES_DIR/.bashrc" ]; then
+    backup_and_copy "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
+fi
+
 log_step "Updating font cache..."
 fc-cache -f >/dev/null 2>&1 || true
 
