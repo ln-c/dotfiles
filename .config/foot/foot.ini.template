@@ -4,8 +4,8 @@ pad=14x14
 dpi-aware=no
 selection-target=primary
 
-# Load Pywal's generated colors
-include=~/.cache/wal/colors-foot.ini
+# Load Wallust's generated colors
+include=~/.cache/wallust/colors-foot.ini
 
 [cursor]
 style=beam

@@ -12,8 +12,8 @@ inner-pad=5
 # Optional: use a dark icon theme if you have one installed
 # icon-theme=Papirus-Dark 
 
-# Load Pywal's generated colors
-include=~/.cache/wal/fuzzel.ini
+# Load Wallust's generated colors
+include=~/.cache/wallust/fuzzel.ini
 
 [border]
 width=1

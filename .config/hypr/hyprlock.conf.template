@@ -1,4 +1,4 @@
-source = ~/.cache/wal/colors-hyprland
+source = ~/.cache/wallust/colors-hyprland
 
 $font = ${FONT_NAME}
 $font_size = ${HYPRLOCK_FONT_SIZE}

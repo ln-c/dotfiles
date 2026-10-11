@@ -1,0 +1,134 @@
+# ~/.config/wallust/templates/yazi-theme.toml
+
+[manager]
+cwd = { fg = "{{color4}}" }
+hovered         = { fg = "{{background}}", bg = "{{color4}}" }
+preview_hovered = { underline = true }
+find_keyword    = { fg = "{{color3}}", italic = true }
+find_position   = { fg = "{{color5}}", bg = "reset", italic = true }
+marker_copied   = { fg = "{{color2}}", bg = "{{color2}}" }
+marker_cut      = { fg = "{{color1}}", bg = "{{color1}}" }
+marker_marked   = { fg = "{{color6}}", bg = "{{color6}}" }
+border_symbol = "│"
+border_style  = { fg = "{{color8}}" }
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "{{color8}}", bg = "{{color8}}" }
+mode_normal = { fg = "{{background}}", bg = "{{color4}}", bold = true }
+mode_select = { fg = "{{background}}", bg = "{{color6}}", bold = true }
+mode_unset  = { fg = "{{background}}", bg = "{{color1}}", bold = true }
+progress_label  = { fg = "{{color7}}", bold = true }
+progress_normal = { fg = "{{color5}}", bg = "{{background}}" }
+progress_error  = { fg = "{{color1}}", bg = "{{background}}" }
+
+[select]
+border   = { fg = "{{color4}}" }
+active   = { fg = "{{color5}}" }
+inactive = { fg = "{{color7}}" }
+
+[input]
+border   = { fg = "{{color4}}" }
+selected = { reversed = true }
+
+[completion]
+border   = { fg = "{{color4}}" }
+active   = { bg = "{{color8}}" }
+
+[tasks]
+border  = { fg = "{{color4}}" }
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "{{background}}" }
+cand            = { fg = "{{color6}}" }
+rest            = { fg = "{{color5}}" }
+desc            = { fg = "{{color3}}" }
+separator       = "  "
+separator_style = { fg = "{{color8}}" }
+
+[help]
+on      = { fg = "{{color6}}" }
+exec    = { fg = "{{color6}}" }
+desc    = { fg = "{{color7}}" }
+hovered = { bg = "{{color8}}", bold = true }
+footer  = { fg = "{{background}}", bg = "{{color7}}" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "{{color6}}" },
+	# Media 
+	{ mime = "{audio,video}/*", fg = "{{color5}}" },
+	# Archives
+	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip2,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "{{color1}}" },
+	# Documents
+	{ mime = "application/{pdf,doc,rtf,vnd.*}", fg = "{{color3}}" },
+	# Empty files
+	{ mime = "inode/empty", fg = "{{color8}}" },
+	# Special files
+	{ url = "*", is = "orphan", bg = "{{color1}}" },
+	{ url = "*", is = "exec"  , fg = "{{color2}}" },
+	# Fallbacks
+	{ url = "*/", fg = "{{color4}}" }
+]
+
+[icon]
+dirs = [
+	{ name = ".git", text = "", fg = "{{color1}}" },
+	{ name = ".config", text = "", fg = "{{color5}}" },
+	{ name = "Desktop", text = "", fg = "{{color4}}" },
+	{ name = "Downloads", text = "", fg = "{{color6}}" },
+	{ name = "Documents", text = "", fg = "{{color3}}" },
+	{ name = "Music", text = "", fg = "{{color5}}" },
+	{ name = "Pictures", text = "", fg = "{{color6}}" },
+	{ name = "Public", text = "", fg = "{{color2}}" },
+	{ name = "Videos", text = "", fg = "{{color5}}" }
+]
+
+files = [
+	{ name = "Makefile", text = "", fg = "{{color3}}" },
+	{ name = "README.md", text = "", fg = "{{color6}}" }
+]
+
+exts = [
+	# Code
+	{ name = "c", text = "", fg = "{{color4}}" },
+	{ name = "cpp", text = "", fg = "{{color4}}" },
+	{ name = "css", text = "", fg = "{{color4}}" },
+	{ name = "go", text = "", fg = "{{color6}}" },
+	{ name = "h", text = "", fg = "{{color4}}" },
+	{ name = "html", text = "", fg = "{{color1}}" },
+	{ name = "js", text = "", fg = "{{color3}}" },
+	{ name = "json", text = "", fg = "{{color6}}" },
+	{ name = "lua", text = "", fg = "{{color4}}" },
+	{ name = "md", text = "", fg = "{{color6}}" },
+	{ name = "py", text = "", fg = "{{color3}}" },
+	{ name = "rs", text = "", fg = "{{color1}}" },
+	{ name = "sh", text = "", fg = "{{color2}}" },
+	{ name = "toml", text = "", fg = "{{color7}}" },
+	{ name = "ts", text = "", fg = "{{color4}}" },
+	{ name = "yaml", text = "", fg = "{{color1}}" },
+	{ name = "yml", text = "", fg = "{{color1}}" },
+	# Media
+	{ name = "flac", text = "", fg = "{{color5}}" },
+	{ name = "mp3", text = "", fg = "{{color5}}" },
+	{ name = "mp4", text = "", fg = "{{color5}}" },
+	{ name = "mkv", text = "", fg = "{{color5}}" },
+	{ name = "png", text = "", fg = "{{color5}}" },
+	{ name = "jpg", text = "", fg = "{{color5}}" },
+	{ name = "jpeg", text = "", fg = "{{color5}}" },
+	{ name = "gif", text = "", fg = "{{color5}}" },
+	# Archives
+	{ name = "zip", text = "", fg = "{{color1}}" },
+	{ name = "tar", text = "", fg = "{{color1}}" },
+	{ name = "gz", text = "", fg = "{{color1}}" },
+	{ name = "xz", text = "", fg = "{{color1}}" }
+]
+
+conds = [
+	{ if = "dir", text = "", fg = "{{color4}}" },
+	{ if = "exec", text = "", fg = "{{color2}}" },
+	{ if = "link", text = "", fg = "{{color6}}" }
+]

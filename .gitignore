@@ -3,6 +3,7 @@
 .config/waybar/style.css
 .config/hypr/hyprlock.conf
 .config/com.limusic.desktop/.window-state.json
+install.log
 
 # Agent files
 AGENTS.md

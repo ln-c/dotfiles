@@ -1,4 +1,4 @@
-    $wallpaper = /{wallpaper.strip}
+    $wallpaper = {wallpaper}
     $foregroundCol = 0xff{foreground.strip}
     $backgroundCol = 0xff{background.strip}
     $color0 = 0xff{color0.strip}

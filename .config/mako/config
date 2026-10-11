@@ -1,0 +1,8 @@
+font=Terminess Nerd Font Propo 16
+background-color=#3a1c18FF
+text-color=#f2efdbFF
+border-color=#EAD8AEFF
+border-size=2
+border-radius=8
+default-timeout=5000
+ignore-timeout=1

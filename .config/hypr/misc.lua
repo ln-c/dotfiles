@@ -6,6 +6,9 @@ hl.config({
         disable_splash_rendering = true,
         background_color = "0x000000" -- Pure black for OLED
     },
+    debug = {
+        vfr = true
+    },
     env = {
         "XDG_CURRENT_DESKTOP,Hyprland",
         "XDG_SESSION_TYPE,wayland",

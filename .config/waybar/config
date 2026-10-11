@@ -18,15 +18,9 @@
                 "*": [ 1,2,3,4,5 ]
             }
         },
-        "custom/notification": {
-            "tooltip": false,
-            "format": "",
-            "on-click": "makoctl dismiss -a",
-            "escape": true
-        },
         "clock": {
             "format": "{:%I:%M %p} ",
-            "interval": 1,   
+            "interval": 60,   
             "tooltip-format": "<tt>{calendar}</tt>",
             "calendar": {
                 "format": { "today": "<span color='#fAfBfC'><b>{}</b></span>"
@@ -77,42 +71,6 @@
             "󰂂",
             "󰁹"
             ]
-        },
-        "custom/expand": {
-            "format": "",
-            "tooltip": false
-        },
-        "custom/endpoint":{
-            "format": "|",
-            "tooltip": false
-        },
-        "group/expand": {
-            "orientation": "horizontal",
-            "drawer": {
-                "transition-duration": 600,
-		"transition-to-left": true,
-                "click-to-reveal": true
-            },
-            "modules": ["custom/expand", "custom/colorpicker","cpu","memory","temperature","custom/endpoint"]
-        },
-        "custom/colorpicker": {
-            "format": "{}",
-            "return-type": "json",
-            "interval": "once",
-            "exec": "~/.config/waybar/scripts/colorpicker.sh -j",
-            "on-click": "~/.config/waybar/scripts/colorpicker.sh",
-            "signal": 1
-        },
-        "cpu": {
-            "format": "󰻠",
-            "tooltip": true
-        },
-        "memory": {
-            "format": ""
-        },
-        "temperature": {
-            "critical-threshold": 80,
-            "format": ""
         },
         "tray": {
             "icon-size": 14,

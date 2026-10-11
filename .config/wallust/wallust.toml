@@ -1,0 +1,15 @@
+# Wallust configuration for dotfiles theming
+backend = "resized"
+color_space = "labmixed"
+palette = "dark16"
+threshold = 20
+check_colordiff = false
+
+[templates]
+colors-foot = { template = "colors-foot.ini", target = "~/.cache/wallust/colors-foot.ini", pywal = true }
+colors-hyprland = { template = "colors-hyprland", target = "~/.cache/wallust/colors-hyprland", pywal = true }
+fuzzel = { template = "fuzzel.ini", target = "~/.cache/wallust/fuzzel.ini", pywal = true }
+mako = { template = "mako-config", target = "~/.cache/wallust/mako-config", pywal = true }
+yazi = { template = "yazi-theme.toml", target = "~/.cache/wallust/yazi-theme.toml", new_engine = true }
+colors-waybar = { template = "colors-waybar.css", target = "~/.cache/wallust/colors-waybar.css", pywal = true }
+colors-sh = { template = "colors.sh", target = "~/.cache/wallust/colors.sh", pywal = true }

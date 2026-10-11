@@ -9,5 +9,5 @@ tab_size = 4
 max_width = 1000
 max_height = 1000
 cache_dir = ""
-image_filter = "triangle"
+image_filter = "sixel"
 image_quality = 75

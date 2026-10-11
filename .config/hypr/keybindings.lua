@@ -3,8 +3,8 @@
 ---------------------
 
 -- Set programs that you use
-local terminal    = "foot"
-local fileManager = "foot -e yazi"
+local terminal    = "footclient || foot"
+local fileManager = "footclient -e yazi || foot -e yazi"
 local menu = "fuzzel"
 
 -------------------

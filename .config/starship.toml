@@ -1,3 +1,5 @@
+command_timeout = 500
+
 format = """ 
 \
 [](fg:blue)\
@@ -9,7 +11,6 @@ $directory\
 [ ](fg:green)\
 $git_branch\
 $git_status\
-$all\
 $character"""
 
 [username]
@@ -107,56 +108,12 @@ format = '[$symbol($version)]($style)'
 symbol = "  "
 format = '[$symbol($version)]($style)'
 
-[c]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[cmake]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[conda]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[crystal]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[dart]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
 [docker_context]
 symbol = "  "
 format = '[$symbol($version)]($style)'
 
-[elixir]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[elm]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[fennel]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[golang]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
 [guix_shell]
 symbol = "   "
-format = '[$symbol($version)]($style)'
-
-[haskell]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[haxe]
-symbol = "  "
 format = '[$symbol($version)]($style)'
 
 [hg_branch]
@@ -167,90 +124,19 @@ format = '[$symbol($version)]($style)'
 ssh_symbol = "  "
 format = '[$symbol($version)]($style)'
 
-[java]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[julia]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[kotlin]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[lua]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
 [memory_usage]
 symbol = " 󰍛 "
-format = '[$symbol($version)]($style)'
-
-[meson]
-symbol = " 󰔷 "
-format = '[$symbol($version)]($style)'
-
-[nim]
-symbol = " 󰆥 "
 format = '[$symbol($version)]($style)'
 
 [nix_shell]
 symbol = "  "
 format = '[$symbol($version)]($style)'
 
-[nodejs]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[ocaml]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
 [package]
 symbol = " 󰏗 "
-format = '[$symbol($version)]($style)'
-
-[perl]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[php]
-symbol = "  "
 format = '[$symbol($version)]($style)'
 
 [pijul_channel]
 symbol = "  "
 format = '[$symbol($version)]($style)'
 
-[python]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[rlang]
-symbol = " 󰟔 "
-format = '[$symbol($version)]($style)'
-
-[ruby]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[rust]
-symbol = " 󱘗 "
-format = '[$symbol($version)]($style)'
-
-[scala]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[swift]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[zig]
-symbol = "  "
-format = '[$symbol($version)]($style)'
-
-[gradle]
-symbol = "  "
-format = '[$symbol($version)]($style)'

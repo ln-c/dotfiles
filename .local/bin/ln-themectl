@@ -1,5 +1,33 @@
 #!/usr/bin/env bash
 
+is_hyprland_running() {
+    pgrep -x Hyprland > /dev/null || pgrep -x hyprland > /dev/null
+}
+
+# Auto-discover Hyprland environment if Hyprland is running
+if is_hyprland_running; then
+    # Validate existing signature or discover the active one
+    if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && ! hyprctl help >/dev/null 2>&1; then
+        unset HYPRLAND_INSTANCE_SIGNATURE
+    fi
+    if [[ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
+        for sig in $(ls -1t /run/user/"$(id -u)"/hypr 2>/dev/null); do
+            if HYPRLAND_INSTANCE_SIGNATURE="$sig" hyprctl help >/dev/null 2>&1; then
+                export HYPRLAND_INSTANCE_SIGNATURE="$sig"
+                break
+            fi
+        done
+    fi
+
+    # Validate existing display or discover active UNIX domain socket
+    if [[ -z "$WAYLAND_DISPLAY" || ! -S "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]]; then
+        for sock in $(find /run/user/"$(id -u)"/ -maxdepth 1 -name 'wayland-[0-9]*' -type s 2>/dev/null | sort -V -r); do
+            export WAYLAND_DISPLAY=$(basename "$sock")
+            break
+        done
+    fi
+fi
+
 # Default values
 NEW_WALL=""
 NEW_FONT=""
@@ -44,8 +72,10 @@ if [[ -n "$NEW_SIZE" ]]; then
 fi
 
 # Load current variables from env.lua for templating
-export FONT_NAME=$(grep -oP '(?<=hl.env\("FONT_NAME", ")[^"]*' "$ENV_FILE" 2>/dev/null || echo "Terminess Nerd Font Propo")
-export FONT_SIZE=$(grep -oP '(?<=hl.env\("FONT_SIZE", ")[^"]*' "$ENV_FILE" 2>/dev/null || echo "16")
+export FONT_NAME=$(grep -oP '(?<=hl.env\("FONT_NAME", ")[^"]*' "$ENV_FILE" 2>/dev/null)
+export FONT_NAME=${FONT_NAME:-"Terminess Nerd Font Propo"}
+export FONT_SIZE=$(grep -oP '(?<=hl.env\("FONT_SIZE", ")[^"]*' "$ENV_FILE" 2>/dev/null)
+export FONT_SIZE=${FONT_SIZE:-16}
 
 export HYPRLOCK_FONT_SIZE=$(( (FONT_SIZE * 5) / 2 ))
 export WAYBAR_FONT_SIZE=$(( FONT_SIZE + 5 ))
@@ -56,55 +86,121 @@ envsubst "$ALLOWED_VARS" < ~/.config/fuzzel/fuzzel.ini.template > ~/.config/fuzz
 envsubst "$ALLOWED_VARS" < ~/.config/waybar/style.css.template > ~/.config/waybar/style.css
 envsubst "$ALLOWED_VARS" < ~/.config/hypr/hyprlock.conf.template > ~/.config/hypr/hyprlock.conf
 
-# Apply wallpaper with Pywal
+# Helper to find default wallpaper
+get_default_wallpaper() {
+    local candidates=(
+        "$HOME/Pictures/Wallpapers/videos/frieren_memories_live.mp4"
+        "$HOME/Pictures/Wallpapers/frieren_memories_live.mp4"
+        "$HOME/wallpapers/frieren_memories_live.mp4"
+        "$HOME/git/dotfiles/wallpapers/frieren_memories_live.mp4"
+        "$(dirname "$(dirname "$(readlink -f "$0")")")/wallpapers/frieren_memories_live.mp4"
+    )
+    for cand in "${candidates[@]}"; do
+        if [[ -f "$cand" ]]; then
+            echo "$cand"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Apply wallpaper with Wallust
 WALL_TRACKER="$HOME/.cache/current_wallpaper"
 mkdir -p "$(dirname "$WALL_TRACKER")"
+mkdir -p "$HOME/.cache/wallust"
+
+if [[ -z "$NEW_WALL" ]]; then
+    if [[ ! -s "$WALL_TRACKER" || ! -f "$(cat "$WALL_TRACKER" 2>/dev/null)" ]]; then
+        DEFAULT_WALL=$(get_default_wallpaper)
+        if [[ -n "$DEFAULT_WALL" ]]; then
+            NEW_WALL="$DEFAULT_WALL"
+        fi
+    fi
+fi
 
 if [[ -n "$NEW_WALL" ]]; then
     NEW_WALL=$(realpath "$NEW_WALL")
     echo "$NEW_WALL" > "$WALL_TRACKER"
     
-    # If the wallpaper is a video, generate a thumbnail and run wal on it
+    # If the wallpaper is a video, generate a thumbnail and run wallust on it
     if [[ "${NEW_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
         THUMB="${NEW_WALL%.*}.jpg"
         if [[ ! -f "$THUMB" ]]; then
-            ffmpeg -y -i "$NEW_WALL" -vf "thumbnail" -frames:v 1 "$THUMB" > /dev/null 2>&1
+            ALT_THUMB="$HOME/Pictures/Wallpapers/$(basename "$THUMB")"
+            if [[ -f "$ALT_THUMB" ]]; then
+                THUMB="$ALT_THUMB"
+            fi
         fi
-        wal -i "$THUMB" -n
+        if [[ ! -f "$THUMB" ]]; then
+            if ffmpeg -y -i "$NEW_WALL" -vf "thumbnail" -frames:v 1 "$THUMB" > /dev/null 2>&1; then
+                :
+            elif ffmpeg -y -i "$NEW_WALL" -vf "thumbnail" -frames:v 1 "$HOME/.cache/wallust/default_thumb.jpg" > /dev/null 2>&1; then
+                THUMB="$HOME/.cache/wallust/default_thumb.jpg"
+            fi
+        fi
+        wallust run -s "$THUMB"
     else
-        wal -i "$NEW_WALL"
+        wallust run -s "$NEW_WALL"
     fi
     NOTIFY_DETAILS+="Wallpaper: $(basename "$NEW_WALL")\n"
 else
-    wal -R
+    if [[ -s "$WALL_TRACKER" ]]; then
+        CURRENT_WALL="$(cat "$WALL_TRACKER")"
+        if [[ "${CURRENT_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
+            THUMB="${CURRENT_WALL%.*}.jpg"
+            [[ -f "$THUMB" ]] || THUMB="$HOME/Pictures/Wallpapers/$(basename "$THUMB")"
+            [[ -f "$THUMB" ]] || THUMB="$HOME/.cache/wallust/default_thumb.jpg"
+            if [[ -f "$THUMB" ]]; then
+                wallust run -s "$THUMB" || true
+            else
+                wallust run -s "$(cat "$WALL_TRACKER")" || true
+            fi
+        else
+            wallust run -s "$(cat "$WALL_TRACKER")" || true
+        fi
+    fi
 fi
-
-
 
 # Apply Mako template
-envsubst "$ALLOWED_VARS" < ~/.cache/wal/mako-config > /tmp/mako-config && mv /tmp/mako-config ~/.cache/wal/mako-config
-
-# Restart Daemons
-killall -q waybar
-killall -q hyprpaper
-killall -q mpvpaper
-
-sleep 0.5
-
-hyprctl eval 'hl.exec_cmd("waybar")' > /dev/null 2>&1
-
-CURRENT_WALL=$(cat "$WALL_TRACKER" 2>/dev/null)
-if [[ -n "$CURRENT_WALL" && "${CURRENT_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
-    hyprctl eval "hl.exec_cmd(\"mpvpaper -vs -o 'loop no-audio' '*' '$CURRENT_WALL'\")" > /dev/null 2>&1
-else
-    hyprctl eval 'hl.exec_cmd("hyprpaper")' > /dev/null 2>&1
+if [[ -f ~/.cache/wallust/mako-config ]]; then
+    mkdir -p ~/.config/mako
+    envsubst "$ALLOWED_VARS" < ~/.cache/wallust/mako-config > ~/.config/mako/config
+    cp -f ~/.config/mako/config ~/.cache/wallust/mako-config
 fi
 
-makoctl reload || true
+# Apply graphical daemons only if Hyprland session is active
+if is_hyprland_running; then
+    # Restart Daemons safely
+    killall -w -q waybar hyprpaper mpvpaper 2>/dev/null || killall -q waybar hyprpaper mpvpaper 2>/dev/null || true
+    sleep 0.3
 
-# Send notification
-if [[ -n "$NOTIFY_DETAILS" ]]; then
-    notify-send "Theme Manager" "$NOTIFY_MSG\n\n$NOTIFY_DETAILS" -i preferences-desktop-theme
-else
-    notify-send "Theme Manager" "$NOTIFY_MSG" -i preferences-desktop-theme
+    CURRENT_WALL=$(cat "$WALL_TRACKER" 2>/dev/null)
+    if [[ -n "$CURRENT_WALL" && "${CURRENT_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
+        hyprctl eval "hl.exec_cmd(\"mpvpaper -vs -o 'loop no-audio' '*' '$CURRENT_WALL'\")" > /dev/null 2>&1 || \
+            nohup mpvpaper -vs -o 'loop no-audio' '*' "$CURRENT_WALL" > /dev/null 2>&1 &
+    else
+        hyprctl eval 'hl.exec_cmd("hyprpaper")' > /dev/null 2>&1 || \
+            nohup hyprpaper > /dev/null 2>&1 &
+    fi
+
+    hyprctl eval 'hl.exec_cmd("waybar")' > /dev/null 2>&1 || \
+        nohup waybar > /dev/null 2>&1 &
+
+    # Reload or start mako
+    if pgrep -x mako > /dev/null; then
+        makoctl reload > /dev/null 2>&1 || true
+    else
+        systemctl --user start mako > /dev/null 2>&1 || \
+            hyprctl eval 'hl.exec_cmd("mako")' > /dev/null 2>&1 || \
+            nohup mako > /dev/null 2>&1 &
+    fi
+
+    # Send notification
+    if command -v notify-send > /dev/null; then
+        if [[ -n "$NOTIFY_DETAILS" ]]; then
+            notify-send "Theme Manager" "$NOTIFY_MSG\n\n$NOTIFY_DETAILS" -i preferences-desktop-theme 2>/dev/null || true
+        else
+            notify-send "Theme Manager" "$NOTIFY_MSG" -i preferences-desktop-theme 2>/dev/null || true
+        fi
+    fi
 fi
