@@ -31,7 +31,7 @@ The core philosophy here is **uncompromising minimalism and performance combined
 | **Theming** | [Wallust](https://codeberg.org/explosion-mental/wallust) config and templates (foot, hyprland, waybar, fuzzel, mako, yazi, shell colors) |
 | **Shell & tools** | `.bashrc`, [Starship](https://starship.rs/), Nushell (`env.nu`, `config.nu`), Fastfetch, htop, global git ignore, `mimeapps.list` |
 | **Editor** | [Zed](https://zed.dev/) `settings.json` and `keymap.json` |
-| **Scripts** (`~/.local/bin`) | `ln-themectl`, `ln-monitorctl`, `ln-brightnessctl`, `ln-playerctl`, `ln-wpctl`, `ln-askpass` (fuzzel-based `SSH_ASKPASS`), `ln-ovms-qwen3-8b-npu` (OpenVINO model server in Docker) |
+| **Scripts** (`~/.local/bin`) | `ln-themectl`, `ln-monitorctl`, `ln-brightnessctl`, `ln-playerctl`, `ln-wpctl`, `ln-askpass` (fuzzel-based `SSH_ASKPASS`) |
 | **Live wallpapers** | `mpvpaper` and `mpvpaper-holder` binaries for video wallpapers |
 | **Assets** | `wallpapers/` (`images/`, `videos/` with jpg thumbnails, plus the default Frieren live wallpaper) and `logo/ln_pixal.png` |
 
