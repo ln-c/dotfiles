@@ -27,12 +27,4 @@
     "light": "One Light",
     "dark": "Ayu Dark",
   },
-  "agent_servers": {
-    "ln-hub": {
-      "default_mode": "design",
-      "type": "custom",
-      "command": "/home/ln/git/ln-agents-zed/rust/target/release/ln-hub",
-      "args": ["acp"],
-    },
-  },
 }
