@@ -1,6 +1,6 @@
 # Wallust configuration for dotfiles theming
 backend = "resized"
-color_space = "labmixed"
+color_space = "lab"
 palette = "dark16"
 threshold = 20
 check_colordiff = false

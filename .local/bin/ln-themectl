@@ -176,8 +176,8 @@ if is_hyprland_running; then
 
     CURRENT_WALL=$(cat "$WALL_TRACKER" 2>/dev/null)
     if [[ -n "$CURRENT_WALL" && "${CURRENT_WALL,,}" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
-        hyprctl eval "hl.exec_cmd(\"mpvpaper -vs -o 'loop no-audio' '*' '$CURRENT_WALL'\")" > /dev/null 2>&1 || \
-            nohup mpvpaper -vs -o 'loop no-audio' '*' "$CURRENT_WALL" > /dev/null 2>&1 &
+        hyprctl eval "hl.exec_cmd(\"mpvpaper -vp -o 'loop no-audio' '*' '$CURRENT_WALL'\")" > /dev/null 2>&1 || \
+            nohup mpvpaper -vp -o 'loop no-audio' '*' "$CURRENT_WALL" > /dev/null 2>&1 &
     else
         hyprctl eval 'hl.exec_cmd("hyprpaper")' > /dev/null 2>&1 || \
             nohup hyprpaper > /dev/null 2>&1 &
