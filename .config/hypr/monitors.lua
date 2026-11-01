@@ -11,7 +11,7 @@ hl.monitor({
 -- Fallback Monitor setup
 hl.monitor({
     output = "DP-1",
-    mode = "1920x1080@60.00",
+    mode = "2560x1440@120.00",
     position = "0x1080",
     vrr = false,
     scale = 1

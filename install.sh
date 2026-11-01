@@ -179,18 +179,42 @@ fi
 
 if [ -d "$DOTFILES_DIR/wallpapers" ]; then
     log_step "Deploying wallpapers..."
+    mkdir -p "$HOME/Pictures/Wallpapers"
+
+    # Subdirectories (images/, videos/) are deployed first, as whole directories.
+    for dir in "$DOTFILES_DIR/wallpapers"/*/; do
+        [ -d "$dir" ] || continue
+        base=$(basename "$dir")
+        backup_and_copy "${dir%/}" "$HOME/Pictures/Wallpapers/$base"
+    done
     mkdir -p "$HOME/Pictures/Wallpapers/videos"
+
+    # Top-level files go to Wallpapers/; videos (and their jpg thumbnail) are also
+    # mirrored into videos/ unless the repo's videos/ directory already ships them,
+    # so backup_and_copy never moves a freshly deployed file into the backup.
     for wp in "$DOTFILES_DIR/wallpapers"/*; do
-        [ -e "$wp" ] || continue
+        [ -f "$wp" ] || continue
         base=$(basename "$wp")
         backup_and_copy "$wp" "$HOME/Pictures/Wallpapers/$base"
         if [[ "$base" =~ \.(mp4|webm|mkv|gif|avi|mov)$ ]]; then
-            backup_and_copy "$wp" "$HOME/Pictures/Wallpapers/videos/$base"
+            if [ ! -e "$DOTFILES_DIR/wallpapers/videos/$base" ]; then
+                backup_and_copy "$wp" "$HOME/Pictures/Wallpapers/videos/$base"
+            fi
             thumb="${wp%.*}.jpg"
-            if [ -f "$thumb" ]; then
+            if [ -f "$thumb" ] && [ ! -e "$DOTFILES_DIR/wallpapers/videos/$(basename "$thumb")" ]; then
                 backup_and_copy "$thumb" "$HOME/Pictures/Wallpapers/videos/$(basename "$thumb")"
             fi
         fi
+    done
+fi
+
+if [ -d "$DOTFILES_DIR/logo" ]; then
+    log_step "Deploying logo..."
+    mkdir -p "$HOME/Pictures/Logo"
+    for logo in "$DOTFILES_DIR/logo"/*; do
+        [ -e "$logo" ] || continue
+        base=$(basename "$logo")
+        backup_and_copy "$logo" "$HOME/Pictures/Logo/$base"
     done
 fi
 

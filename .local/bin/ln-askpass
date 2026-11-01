@@ -1,0 +1,5 @@
+#!/bin/sh
+# SSH_ASKPASS for Wayland: ssh and ssh-keygen pass the question as $1 and read the answer from stdout.
+# Stays open when focus moves (Hyprland focus-follows-mouse); Esc cancels (non-zero exit).
+exec fuzzel --dmenu --prompt-only="${1:-Passphrase:} " --password --width 80 \
+  --no-exit-on-keyboard-focus-loss </dev/null
