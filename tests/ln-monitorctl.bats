@@ -2,6 +2,8 @@
 # Tests for .local/bin/ln-monitorctl. Only the external `hyprctl` binary is
 # stubbed (PATH shim); the script under test runs unmodified.
 
+bats_require_minimum_version 1.5.0
+
 setup() {
     REPO="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
     SCRIPT="$REPO/.local/bin/ln-monitorctl"
@@ -12,10 +14,14 @@ setup() {
     : > "$HYPRCTL_LOG"
 
     # Fake hyprctl: `monitors all` prints real-format text for $STUB_MONITORS;
-    # every invocation's args are logged one line per call.
+    # every invocation's args are logged one line per call. With STUB_FAIL set,
+    # every call exits 1 with no output (hyprctl missing/failing/not running).
     cat > "$STUB_DIR/hyprctl" <<'STUB'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >> "$HYPRCTL_LOG"
+if [ -n "$STUB_FAIL" ]; then
+    exit 1
+fi
 if [ "$1" = "monitors" ] && [ "$2" = "all" ]; then
     id=0
     for m in $STUB_MONITORS; do
@@ -90,4 +96,51 @@ eval_lines() {
     run bash "$SCRIPT" eDP-1 off
     [ "$status" -eq 0 ]
     grep -Fxq 'eval hl.monitor({ output = "eDP-1", disabled = true })' "$HYPRCTL_LOG"
+}
+
+# Breaks if: the Invalid monitor diagnostic is written to stdout instead of
+# stderr, or an eval is issued for an unknown monitor. (Regression guard: the
+# current script already sends this message to stderr.)
+@test "unknown monitor reports Invalid monitor on stderr only, no eval" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run --separate-stderr bash "$SCRIPT" HDMI-A-9 off
+    [ "$status" -eq 1 ]
+    [[ "$stderr" == *"Invalid monitor"* ]]
+    [[ "$output" != *"Invalid monitor"* ]]
+    [ -z "$(eval_lines)" ]
+}
+
+# Breaks if: an invalid action's error goes to stdout instead of stderr, or
+# an eval is issued despite the bad action.
+@test "invalid action reports on/off usage on stderr only, no eval" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run --separate-stderr bash "$SCRIPT" DP-1 sideways
+    [ "$status" -eq 1 ]
+    [[ "$stderr" == *"'on' or 'off'"* ]]
+    [[ "$output" != *"'on' or 'off'"* ]]
+    [ -z "$(eval_lines)" ]
+}
+
+# Breaks if: a failing hyprctl is misreported as "Invalid monitor" (empty
+# monitor list treated as unknown monitor), or no hyprctl diagnostic is given.
+@test "hyprctl failure on DP-1 off reports hyprctl error, not Invalid monitor" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    export STUB_FAIL=1
+    run --separate-stderr bash "$SCRIPT" DP-1 off
+    [ "$status" -eq 1 ]
+    [[ "$stderr" == *"hyprctl"* ]]
+    [[ "$stderr" != *"Invalid monitor"* ]]
+    [[ "$output" != *"Invalid monitor"* ]]
+    [ -z "$(eval_lines)" ]
+}
+
+# Breaks if: `ini` swallows a hyprctl failure and exits 0 silently (COUNT=0
+# looks like "single monitor"), hiding that nothing was checked.
+@test "ini with failing hyprctl exits 1 with hyprctl error and no eval" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    export STUB_FAIL=1
+    run --separate-stderr bash "$SCRIPT" ini
+    [ "$status" -eq 1 ]
+    [[ "$stderr" == *"hyprctl"* ]]
+    [ -z "$(eval_lines)" ]
 }

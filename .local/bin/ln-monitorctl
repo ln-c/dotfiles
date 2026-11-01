@@ -1,53 +1,50 @@
 #!/usr/bin/env bash
 
+LAPTOP_MONITOR=eDP-1
+
+# One hyprctl query; the monitor list (and so its count) is derived from it.
+if ! MONITOR_INFO=$(hyprctl monitors all); then
+    echo "Error: hyprctl monitors all failed (is Hyprland running?)" >&2
+    exit 1
+fi
+MONITORS=$(awk '/^Monitor/ {print $2}' <<<"$MONITOR_INFO")
+
 # Check if a monitor name was provided
-if [ -z "$1" ]; then
-    echo "Usage: ln-monitorctl <monitor_name> [on|off]"
-    echo ""
-    echo "Available monitors:"
-    # List all monitors
-    hyprctl monitors all | awk '/^Monitor/ {print $2}'
+if [[ -z "$1" ]]; then
+    {
+        echo "Usage: ln-monitorctl <monitor_name> [on|off]"
+        echo ""
+        echo "Available monitors:"
+        echo "$MONITORS"
+    } >&2
     exit 1
 fi
 
-# If the "ini" is provided, means disable eDP-1 (laptop monitor)
-COUNT=$(hyprctl monitors all | grep -c "^Monitor")
+# "ini" disables the laptop panel, but only when another monitor is connected
 if [[ "$1" == "ini" ]]; then
-    if (( COUNT > 1 )); then
-        hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })'
+    if (( $(wc -l <<<"$MONITORS") > 1 )); then
+        hyprctl eval "hl.monitor({ output = \"$LAPTOP_MONITOR\", disabled = true })"
     fi
     exit 0
 fi
 
-# Check whether valid monitor is provided
-MONITORS=$(hyprctl monitors all | awk '/^Monitor/ {print $2}')
-MONITOR=""
-for monitor in $MONITORS; do
-    if [[ "$1" == "$monitor" ]]; then
-        MONITOR="$1"
-    fi
-done
-if [[ -z "$MONITOR" ]]; then
+# Check whether a valid monitor is provided
+if ! grep -Fxq -- "$1" <<<"$MONITORS"; then
     echo "Error: Invalid monitor ID" >&2
     echo "Try ln-monitorctl without argument to see the list of monitor IDs" >&2
     exit 1
 fi
+MONITOR="$1"
 
 # Default to 'off' if the second argument isn't provided
-ACTION="${2:-off}"
+case "${2:-off}" in
+    off) disabled=true verb=Disabling ;;
+    on) disabled=false verb=Enabling ;;
+    *)
+        echo "Error: Action must be 'on' or 'off'." >&2
+        exit 1
+        ;;
+esac
 
-if [[ "$ACTION" == "off" ]]; then
-    #echo "Turning off backlight for $MONITOR..."
-    #hyprctl eval 'hl.dispatch(hl.dsp.dpms({ action = "disable", monitor = "'"$MONITOR"'" }))'
-    echo "Disabling $MONITOR"
-    hyprctl eval 'hl.monitor({ output = "'$MONITOR'", disabled = true })'
-
-elif [[ "$ACTION" == "on" ]]; then
-    #echo "Turning on backlight for $MONITOR..."
-    #hyprctl eval 'hl.dispatch(hl.dsp.dpms({ action = "enable", monitor = "'"$MONITOR"'" }))'
-    echo "Enabling $MONITOR"
-    hyprctl eval 'hl.monitor({ output = "'$MONITOR'", disabled = false })'
-else
-    echo "Error: Action must be 'on' or 'off'."
-    exit 1
-fi
+echo "$verb $MONITOR"
+hyprctl eval "hl.monitor({ output = \"$MONITOR\", disabled = $disabled })"
