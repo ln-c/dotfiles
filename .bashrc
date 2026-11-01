@@ -31,7 +31,7 @@ PROMPT_COMMAND="__run_fastfetch_once; ${PROMPT_COMMAND:-}"
 export PATH="/home/ln/.local/bin:$PATH"
 
 export PATH="$HOME/.local/bin:$PATH"
-. "$HOME/.cargo/env"
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 
 # SSH passphrases (git commit signing included) ask in a desktop window
 export SSH_ASKPASS="$HOME/.local/bin/ln-askpass"
