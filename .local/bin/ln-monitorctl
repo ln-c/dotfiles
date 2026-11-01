@@ -12,22 +12,26 @@ fi
 
 # If the "ini" is provided, means disable eDP-1 (laptop monitor)
 COUNT=$(hyprctl monitors all | grep -c "^Monitor")
-if [[ "$1" == "ini" && COUNT > 1 ]]; then
-    hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })'
-    exit 1
+if [[ "$1" == "ini" ]]; then
+    if (( COUNT > 1 )); then
+        hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })'
+    fi
+    exit 0
 fi
 
 # Check whether valid monitor is provided
 MONITORS=$(hyprctl monitors all | awk '/^Monitor/ {print $2}')
+MONITOR=""
 for monitor in $MONITORS; do
     if [[ "$1" == "$monitor" ]]; then
         MONITOR="$1"
-    else
-	echo "Error: Invalid monitor ID"
-	echo "Try ln-monitorctl without argument to see the list of monitor IDs"
-	exit 1
     fi
 done
+if [[ -z "$MONITOR" ]]; then
+    echo "Error: Invalid monitor ID" >&2
+    echo "Try ln-monitorctl without argument to see the list of monitor IDs" >&2
+    exit 1
+fi
 
 # Default to 'off' if the second argument isn't provided
 ACTION="${2:-off}"
