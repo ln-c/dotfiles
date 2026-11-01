@@ -11,3 +11,6 @@ AGENTS.md
 .agents/skills/arch-vm-tester/vm_data/
 .agents/
 .agents/
+
+# Nushell history (may contain secrets)
+.config/nushell/history.txt
