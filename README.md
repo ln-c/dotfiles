@@ -62,11 +62,15 @@ These are produced by `ln-themectl` and ignored by git, so do not edit them by h
 
 | Clean Desktop | Busy Workspace |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/400x225/1e1e2e/cba6f7?text=Clean+Desktop" alt="Clean Desktop"/> | <img src="https://via.placeholder.com/400x225/1e1e2e/cba6f7?text=Busy+Workspace" alt="Busy Workspace"/> |
+| <img src="assets/screenshots/clean-desktop.png" width="400" alt="Clean Desktop"/> | <img src="assets/screenshots/busy-workspace.png" width="400" alt="Busy Workspace"/> |
 
 | Terminal (Foot) | File Manager (Yazi) |
 | :---: | :---: |
-| <img src="https://via.placeholder.com/400x225/1e1e2e/cba6f7?text=Foot+Terminal" alt="Foot Terminal"/> | <img src="https://via.placeholder.com/400x225/1e1e2e/cba6f7?text=Yazi" alt="Yazi"/> |
+| <img src="assets/screenshots/foot-terminal.png" width="400" alt="Foot Terminal"/> | <img src="assets/screenshots/yazi.png" width="400" alt="Yazi"/> |
+
+| Launcher (Fuzzel) |
+| :---: |
+| <img src="assets/screenshots/fuzzel.png" width="400" alt="Fuzzel Launcher"/> |
 
 </details>
 
