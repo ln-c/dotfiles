@@ -81,8 +81,8 @@ eval_lines() {
     [ "$status" -eq 0 ]
 }
 
-# Breaks if: the monitor-count check is not numeric (`COUNT > 1` is a string
-# test that is always true), so the only display gets disabled.
+# Breaks if: the monitor-count check is not numeric (a string comparison such
+# as `> 1` is always true), so the only display gets disabled.
 @test "ini with only eDP-1 does not disable anything and exits 0" {
     export STUB_MONITORS="eDP-1"
     run bash "$SCRIPT" ini
@@ -121,8 +121,9 @@ eval_lines() {
     [ -z "$(eval_lines)" ]
 }
 
-# Breaks if: a failing hyprctl is misreported as "Invalid monitor" (empty
-# monitor list treated as unknown monitor), or no hyprctl diagnostic is given.
+# Breaks if: a failing hyprctl is misreported as "Invalid monitor" (the failed
+# query is not guarded, so the empty monitor list is treated as an unknown
+# monitor), or no hyprctl diagnostic is given.
 @test "hyprctl failure on DP-1 off reports hyprctl error, not Invalid monitor" {
     export STUB_MONITORS="eDP-1 DP-1"
     export STUB_FAIL=1
@@ -134,8 +135,9 @@ eval_lines() {
     [ -z "$(eval_lines)" ]
 }
 
-# Breaks if: `ini` swallows a hyprctl failure and exits 0 silently (COUNT=0
-# looks like "single monitor"), hiding that nothing was checked.
+# Breaks if: `ini` swallows a hyprctl failure and exits 0 silently (a failed
+# query yields an empty monitor list that looks like "single monitor"), hiding
+# that nothing was checked.
 @test "ini with failing hyprctl exits 1 with hyprctl error and no eval" {
     export STUB_MONITORS="eDP-1 DP-1"
     export STUB_FAIL=1
@@ -143,4 +145,45 @@ eval_lines() {
     [ "$status" -eq 1 ]
     [[ "$stderr" == *"hyprctl"* ]]
     [ -z "$(eval_lines)" ]
+}
+
+# Breaks if: the no-argument help (usage + available monitors) goes to stderr
+# instead of stdout, or the monitor names are missing from it. NEW BEHAVIOR:
+# help is requested output, not an error diagnostic; exit status stays 1.
+@test "no arguments prints usage and monitor names on stdout, stderr empty, exit 1" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run --separate-stderr bash "$SCRIPT"
+    [[ "$output" == *"Usage"* ]]
+    [[ "$output" == *"eDP-1"* ]]
+    [[ "$output" == *"DP-1"* ]]
+    [ -z "$stderr" ]
+    [ "$status" -eq 1 ]
+}
+
+# Regression guard (passes already): the monitor list is fetched with exactly
+# one `hyprctl monitors all` per run. Breaks if the script queries twice
+# (e.g. once for validation and again for the count).
+@test "DP-1 off queries hyprctl monitors all exactly once" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run bash "$SCRIPT" DP-1 off
+    [ "$status" -eq 0 ]
+    [ "$(grep -c '^monitors all$' "$HYPRCTL_LOG")" -eq 1 ]
+}
+
+# Regression guard (passes already): same single-query property for `ini`.
+@test "ini queries hyprctl monitors all exactly once" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run bash "$SCRIPT" ini
+    [ "$status" -eq 0 ]
+    [ "$(grep -c '^monitors all$' "$HYPRCTL_LOG")" -eq 1 ]
+}
+
+# Regression guard (passes already): the action defaults to 'off'. Breaks if
+# a bare `ln-monitorctl DP-1` does nothing, enables, or is rejected.
+@test "DP-1 with no action disables DP-1" {
+    export STUB_MONITORS="eDP-1 DP-1"
+    run bash "$SCRIPT" DP-1
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Disabling DP-1"* ]]
+    grep -Fxq 'eval hl.monitor({ output = "DP-1", disabled = true })' "$HYPRCTL_LOG"
 }
