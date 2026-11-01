@@ -16,7 +16,7 @@ if [[ -z "$1" ]]; then
         echo ""
         echo "Available monitors:"
         echo "$MONITORS"
-    } >&2
+    }
     exit 1
 fi
 
